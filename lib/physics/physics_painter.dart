@@ -11,15 +11,24 @@ class PhysicsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-
-    print("painting");
+   
+   // print("painting");
     // TODO: implement paint
 
     // canvas.clipRect(Rect.fromCenter());
-
+    
     for (Particle part in system.particles) {
+      if(part.offset.dx>size.width||part.offset.dx<0){
+        part.velocity.x *= -1;
+      }
+      if(part.offset.dy>size.height||part.offset.dy<0){
+        part.velocity.y *= -1;
+      }
       canvas.drawCircle(part.offset, 10, Paint()..color=Color.fromARGB(part.alpha, 100, 100, 100));
     }
+    
+
+    
   }
 
   @override

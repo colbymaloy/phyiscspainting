@@ -15,12 +15,14 @@ class Particle {
   Vector2 startLocation;
 
   ///Velocity is ADDED to current coordinates to create the new position. Add over time to simulate motion
+  ///[velocity] is the rate of change of location
   Vector2 velocity;
 
- 
   ///acceleration does not merely refer to the speeding up or slowing down of a moving object,
   ///but rather any change in velocity in either magnitude or direction.
-  ///Acceleration is used to steer an object and should? be added to velocity
+  ///Acceleration is used to steer an object and should? be added to velocity.
+  ///[acceleration] is the rate of change of velocity.
+  ///
   Vector2 acceleration;
 
   ///Force = mass*acceleration
@@ -100,21 +102,40 @@ class Particle {
   }
 
   Particle(this.location) {
-    velocity = Vector2(next(-3,5 ).toDouble(), next(-5, -1).toDouble());
-    acceleration = Vector2(0, 0);
+    velocity = Vector2
+        .zero(); // Vector2(next(-3,5 ).toDouble(), next(-5, -1).toDouble());
+    acceleration = Vector2.zero();
   }
 
   ///update should change the location by applying other vectors which have been set elsewhere
   update() {
-    //velocity.add(acceleration);
+    acceleration = Vector2(next(-1, 2).toDouble(),next(-2, 2).toDouble());
+    //acceleration.scale();
+    acceleration = dirToTravel();
+    velocity.add(acceleration);
+    limit(3);
     location.add(velocity);
 
-    acceleration.multiply(Vector2.zero());
-    if(alpha>0){alpha-=5;}
+    //acceleration.multiply(Vector2.zero());
+    if (alpha > 0) {
+      alpha -= 3;
+    }
   }
 
-  bool get finished=>alpha<=0;
+  limit(double max){
+    
+    if(velocity.length>max*max){
+      velocity.normalize();
+      velocity.scale(max);
+    }
+  }
+  Vector2 tapPos ;
 
+  Vector2 dirToTravel (){
+    Vector2 temp = Vector2(tapPos.x-location.x,tapPos.y-location.y);
+    print(temp);
+    return temp; //.normalized();
+  }
 
   ///apply a force to acceleration
   applyForce(Vector2 force) {
@@ -124,11 +145,12 @@ class Particle {
   ///get the x&y as an offset to make it easier to work with in painter
   Offset get offset => Offset(this.location.x, this.location.y);
 
+/// Generates a positive random integer uniformly distributed on the range
+/// from [min], inclusive, to [max], exclusive. keep in mind the EXCLUSIVE part. for a number in range of -2,2 - 
+/// you should call this function with 1 number higher than your desired max. -2,3
   
-  int next(int min, int max) => min + Random().nextInt(max - min);
+  int next(int min, int max) => min + (Random().nextInt(max - min));
 
+  ///used to determine when to remove a particle from the array
+  bool get finished => alpha <= 0;
 }
-
-
-
-
