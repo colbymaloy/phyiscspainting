@@ -26,7 +26,7 @@ class Particle {
   Vector2 acceleration;
 
   ///Force = mass*acceleration
-  double mass;
+  double mass = 1;
 
   int alpha = 255;
 
@@ -49,13 +49,23 @@ class Particle {
   ///F = -1*u*N*v
   ///
   ///*u(coefficient of friction,i.e ice has a lower value than sandpaper )
+  ///
   ///*N(the normal force - newtons 3rd law - vehicle pushes against road with Gravity, road pushes back with N)
   /// the object is moving along a surface at an angle, computing the normal force
   /// is a bit more complicated because it doesn’t point in the same direction as gravity.
   /// We’ll need to know something about angles and trigonometry later.
-  ///*velocity(normalized velocity ie- the unit vector for the velocity
+  ///*velocity(normalized velocity ie- the unit vector for the velocity)
   ///
-  Vector2 friction;
+  ///this should be used for friction that is NOT air or fluid resistance
+  ///we want to return the Vector to use in applyForce
+  Vector2 getFriction(double coefficientOfFriction, double normalForce) {
+    double frictionMag = coefficientOfFriction * normalForce;
+    Vector2 friction = velocity;
+    friction *= -1.0;
+    friction.normalize();
+    friction *= frictionMag;
+    return friction;
+  }
 
   /// air and fluid resistance Friction also occurs when a body passes through a liquid or gas(air).
   /// viscous force, drag force, fluid resistance. While the result is ultimately the same as our previous
@@ -102,53 +112,82 @@ class Particle {
   }
 
   Particle(this.location) {
-    velocity = Vector2
-        .zero(); // Vector2(next(-3,5 ).toDouble(), next(-5, -1).toDouble());
+    velocity = Vector2(
+        next(-3, 5).toDouble(), next(-2, -1).toDouble()); //Vector2(0,-3);//
     acceleration = Vector2.zero();
+    mass = next(4, 10).toDouble();
+    size = mass;
   }
+
+  Vector2 gravity = Vector2(0, .4);
 
   ///update should change the location by applying other vectors which have been set elsewhere
   update() {
-    acceleration = Vector2(next(-1, 2).toDouble(),next(-2, 2).toDouble());
-    //acceleration.scale();
-    acceleration = dirToTravel();
+    ///has the effect of making the particles move similar to fire
+   
+    //applyForce( Vector2(next(-1, 2).toDouble(),next(-2, 2).toDouble()));
+
     velocity.add(acceleration);
     limit(3);
     location.add(velocity);
 
-    //acceleration.multiply(Vector2.zero());
+    acceleration.multiply(Vector2.zero());
     if (alpha > 0) {
-      alpha -= 3;
+      alpha -= 1;
     }
   }
 
-  limit(double max){
-    
-    if(velocity.length>max*max){
+  limit(double max) {
+    if (velocity.length > max * max) {
       velocity.normalize();
       velocity.scale(max);
     }
   }
-  Vector2 tapPos ;
 
-  Vector2 dirToTravel (){
-    Vector2 temp = Vector2(tapPos.x-location.x,tapPos.y-location.y);
-    print(temp);
-    return temp; //.normalized();
+  Vector2 tapPos;
+
+  Vector2 dirToTravel() {
+    return Vector2(tapPos.x - location.x, tapPos.y - location.y)
+      ..normalized(); //.normalized();
   }
 
   ///apply a force to acceleration
+  ///if we have a mass, we create a copy of the Force vector so we don't change the original,
+  /// then divide the force copy by mass
+  ///
   applyForce(Vector2 force) {
-    acceleration.add(force);
+    Vector2 temp = force.clone() / mass;
+
+    //acceleration.add(dirToTravel());
+
+    acceleration.add(temp);
+    //acceleration.add(gravity);
+  }
+
+  checkEdges(Size size) {
+    if (offset.dx > size.width || offset.dx < 0) {
+      velocity.x *= -1;
+    }
+    if (offset.dy > size.height || offset.dy < 0) {
+      velocity.y *= -1;
+    }
+    if (offset.dy < size.height / 1.3) {
+      if (velocity == Vector2.zero()) {
+      // acceleration = Vector2(next(-1, 2).toDouble(),next(-2, 2).toDouble());
+      }else{
+        
+         applyForce(getFriction(.2, 1));
+      }
+    }
   }
 
   ///get the x&y as an offset to make it easier to work with in painter
   Offset get offset => Offset(this.location.x, this.location.y);
 
-/// Generates a positive random integer uniformly distributed on the range
-/// from [min], inclusive, to [max], exclusive. keep in mind the EXCLUSIVE part. for a number in range of -2,2 - 
-/// you should call this function with 1 number higher than your desired max. -2,3
-  
+  /// Generates a positive random integer uniformly distributed on the range
+  /// from [min], inclusive, to [max], exclusive. keep in mind the EXCLUSIVE part. for a number in range of -2,2 -
+  /// you should call this function with 1 number higher than your desired max. -2,3
+
   int next(int min, int max) => min + (Random().nextInt(max - min));
 
   ///used to determine when to remove a particle from the array

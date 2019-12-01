@@ -13,14 +13,13 @@ class _PhysicsHomeState extends State<PhysicsHome>
     with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation animation;
-  Offset _offset = Offset(.4, .7);
-
+ 
   ParticleSystem system;
 
   @override
   initState() {
     super.initState();
-    system = ParticleSystem(count: 1);
+    
     controller =
         AnimationController(vsync: this, duration: Duration(seconds: 10))
           ..addListener(() {
@@ -34,14 +33,15 @@ class _PhysicsHomeState extends State<PhysicsHome>
 
   @override
   Widget build(BuildContext context) {
+    system = ParticleSystem(size:MediaQuery.of(context).size);
     print('being build');
     return Scaffold(
-      backgroundColor: Colors.lightGreen,
+      backgroundColor: Color(0xff3d403d),
       body: GestureDetector(
         onHorizontalDragUpdate: (details){
-          controller.reset();
+         // controller.reset();
           system.tapPos = Vector2(details.globalPosition.dx,details.globalPosition.dy);
-          controller.forward();
+         // controller.forward();
         },
         onTap: () {
           controller.forward();

@@ -11,28 +11,20 @@ class ParticleSystem extends ChangeNotifier {
   Random ran = Random();
   Vector2 tapPos = Vector2.zero();
 
-  Size size ;
+  Size size;
 
-  ParticleSystem({
-    int count,
-  }) {
-    particles = List.generate(
-      count,
-      (size) {
-        return Particle(
-          Vector2(175, 500),
-        );
-      },
-    );
+  ParticleSystem({int count, this.size}) {
+  
+   
   }
 
   updateParticles() {
-    particles.add(Particle(Vector2(175, 500)));
+    particles.add(Particle(Vector2(ran.nextDouble()*this.size.width, this.size.height)));
 
-    for (int i = particles.length-1;i>0;i--) {
+    for (int i = particles.length - 1; i >= 0; i--) {
       particles[i].tapPos = tapPos;
       particles[i].update();
-      if(particles[i].finished){
+      if (particles[i].finished) {
         particles.removeAt(i);
       }
     }

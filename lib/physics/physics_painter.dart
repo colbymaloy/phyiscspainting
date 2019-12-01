@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:physics/physics/particle.dart';
 import 'package:physics/physics/particle_system.dart';
+import 'package:vector_math/vector_math.dart';
 
 class PhysicsPainter extends CustomPainter {
   ParticleSystem system;
@@ -18,13 +19,10 @@ class PhysicsPainter extends CustomPainter {
     // canvas.clipRect(Rect.fromCenter());
     
     for (Particle part in system.particles) {
-      if(part.offset.dx>size.width||part.offset.dx<0){
-        part.velocity.x *= -1;
-      }
-      if(part.offset.dy>size.height||part.offset.dy<0){
-        part.velocity.y *= -1;
-      }
-      canvas.drawCircle(part.offset, 10, Paint()..color=Color.fromARGB(part.alpha, 100, 100, 100));
+      
+      part.checkEdges(size);
+      
+      canvas.drawCircle(part.offset, part.size, Paint()..color=Color.fromARGB(part.alpha, 200, 200, 200));
     }
     
 
