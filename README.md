@@ -1,16 +1,4 @@
 # physics
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
+this is a long term work in progress started so that i could further my understanding of physics based animations and interactions using things like particle systems in Flutter. It's one of my favorites because i love physics based programming.
 samples, guidance on mobile development, and a full API reference.
